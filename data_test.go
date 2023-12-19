@@ -8,7 +8,6 @@ package scan
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -123,7 +122,6 @@ func (tf *TestFolder) Display() {
 	for _, c := range tf.children {
 		c.Display()
 	}
-	return
 }
 
 // DestroyTestData -
@@ -148,7 +146,7 @@ func (tf *TestFolder) Create() (err error) {
 		}
 
 		for _, f := range qtf.files {
-			ioutil.WriteFile(f, []byte(f), os.ModePerm)
+			os.WriteFile(f, []byte(f), os.ModePerm)
 		}
 
 		for _, c := range qtf.children {

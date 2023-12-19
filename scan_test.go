@@ -6,6 +6,7 @@ package scan
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"testing"
 )
@@ -21,7 +22,7 @@ const (
 type testBuilder struct {
 }
 
-func (b *testBuilder) Filter(info os.FileInfo) (ok bool) {
+func (b *testBuilder) Filter(info fs.DirEntry) (ok bool) {
 	name := info.Name()
 	if name != tout && name != tscript {
 		ok = true
@@ -30,7 +31,7 @@ func (b *testBuilder) Filter(info os.FileInfo) (ok bool) {
 	return
 }
 
-func (b *testBuilder) Format(info os.FileInfo, folder *Folder) (cmd string) {
+func (b *testBuilder) Format(info fs.DirEntry, folder *Folder) (cmd string) {
 	cmd = fmt.Sprintf(`cp "%s" "%s"%s`, info.Name(), folder.Destination, "\n")
 	fmt.Print("Format", cmd)
 	return

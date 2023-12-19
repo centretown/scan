@@ -6,7 +6,9 @@ package scan
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io/fs"
+
+	// "io/ioutil"
 	"os"
 	"path"
 
@@ -24,7 +26,7 @@ type Folder struct {
 	// Code - generated formatted text
 	Code string
 	// Files - list of filtered files
-	Files []os.FileInfo
+	Files []fs.DirEntry
 	// Children - sub folders
 	Children []string
 }
@@ -35,21 +37,22 @@ type Folders []*Folder
 // Builder - required functions
 type Builder interface {
 	// Filter - function accepts or rejects file
-	Filter(file os.FileInfo) bool
+	Filter(file fs.DirEntry) bool
 	// Format - function returns formatted text for selected files
-	Format(file os.FileInfo, folder *Folder) string
+	Format(file fs.DirEntry, folder *Folder) string
 }
 
 var showMessages = false
 
 // Build - returns input scan results in folders
 // arguments:
-//	in - input base
-//	out - output base
-//  script - name of generated script
-//	builder - Builder interface to filter files and format scripts
-//  write - create folders and generate scripts
-//	verbose - display messages
+//
+//		in - input base
+//		out - output base
+//	 script - name of generated script
+//		builder - Builder interface to filter files and format scripts
+//	 write - create folders and generate scripts
+//		verbose - display messages
 func Build(in, out, script string, builder Builder, write bool, verbose bool) (folders Folders, err error) {
 	// clear queue
 	defer clearQ()
@@ -132,7 +135,7 @@ func scanQ(script string, builder Builder) (fs Folders, err error) {
 
 func scanFolder(in, out, script string, builder Builder) (folder *Folder, err error) {
 	var (
-		files           []os.FileInfo
+		files           []fs.DirEntry
 		name, inc, outc string
 	)
 
@@ -141,7 +144,7 @@ func scanFolder(in, out, script string, builder Builder) (folder *Folder, err er
 		return
 	}
 
-	files, err = ioutil.ReadDir(in)
+	files, err = os.ReadDir(in)
 	if err != nil {
 		return
 	}
@@ -196,7 +199,7 @@ func (f *Folder) Write(cmd []byte) (err error) {
 	}
 
 	msg("write script '%s'", f.Script)
-	err = ioutil.WriteFile(f.Script, cmd, os.ModeAppend|os.ModePerm)
+	err = os.WriteFile(f.Script, cmd, os.ModeAppend|os.ModePerm)
 	if err != nil {
 		return
 	}
