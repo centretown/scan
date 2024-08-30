@@ -7,8 +7,6 @@ package scan
 import (
 	"fmt"
 	"io/fs"
-
-	// "io/ioutil"
 	"os"
 	"path"
 

@@ -1,4 +1,4 @@
-module scan
+module github.com/centretown/scan
 
 go 1.20
 
